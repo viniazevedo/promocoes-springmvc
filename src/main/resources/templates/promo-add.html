@@ -19,13 +19,17 @@
                    placeholder="Ex.: http://www..."/>
             <small id="linkOferta" class="form-text text-muted">Insira o link da promocao correspondente a oferta.
             </small>
+            
             <div id="error-linkPromocao" class=""></div>
+       
         </div>
         <div class="form-group">
             <label for="titulo">Título da Oferta</label>
             <input type="text" class="form-control" id="titulo" name="titulo" aria-describedby="tituloOferta"/>
             <small id="tituloOferta" class="form-text text-muted">Carregamento automático, mas pode ser editado.</small>
+            
             <div id="error-titulo"></div>
+            
         </div>
 
         <div class="form-row">
@@ -54,7 +58,9 @@
                         <option value="">Selecione a Categoria</option>
                         <option th:each="categoria : ${categorias}" th:text="${categoria.titulo}" th:value="${categoria.id}">...</option>
                     </select>
+                    
                     <div id="error-categoria"></div>
+               
                 </div>
                 <div class="form-group">
                     <label for="descricao">Descrição da Oferta</label>
@@ -63,6 +69,7 @@
                 </div>
             </div>
         </div>
+        
         <div class="row p-3">
             <button id="btn-og" class="btn btn-primary btn-lg btn-block">Cadastrar</button>
             <span id="loader-img-btn"></span>

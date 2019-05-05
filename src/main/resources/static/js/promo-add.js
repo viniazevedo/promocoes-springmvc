@@ -1,10 +1,20 @@
-//Submit do formulário para o Controller
+
+
+//Submit do formulário de Cadastro para o Controller
 $("#form-add-promo").submit(function(evt){
-	//bloquear o comportamento padrão do submit(Fazer requisição e refresh da tela)
+	/**
+	 * bloquear o comportamento padrão 
+	 * do submit(Fazer requisição e refresh da tela)
+	 */
 	evt.preventDefault();
 	
 	var promo = {};
-	//A variável deve ter o mesmo nome nos atributos do objeto que será enviado ao back-end
+	
+	/**
+	 * A variável deve ter o mesmo nome nos atributos do objeto 
+	 * que será enviado ao back-end
+	 */
+	
 	promo.linkPromocao = $("#linkPromocao").val();
 	promo.descricao = $("#descricao").val();
 	promo.preco = $("#preco").val();
@@ -13,13 +23,24 @@ $("#form-add-promo").submit(function(evt){
 	promo.linkImagem = $("#linkImagem").attr("src");
 	promo.site = $("#site").text();
 	
-	console.log('promo: ', promo);
+	console.log('Objeto promo: ', promo);
 	
 	$.ajax({
 		method: "POST",
 		url: "/promocao/save",
 		data: promo,
 		beforeSend: function(){
+			
+			//Remover as mensagens
+			$("span").closest('.error-span').remove();
+			
+			//Remover as bordas vermelhas
+			$("#categoria").removeClass("is-invalid");
+			$("#preco").removeClass("is-invalid");
+			$("#linkPromocao").removeClass("is-invalid");
+			$("#titulo").removeClass("is-invalid");
+			
+			//Habilita o loading
 			$("#form-add-promo").hide();
 			$("#loader-form").addClass("loader").show();
 		},
@@ -29,7 +50,24 @@ $("#form-add-promo").submit(function(evt){
 			});
 			$("#linkImagem").attr("src","/images/promo-dark.png");
 			$("#site").text("");
-			$("#alert").addClass('alert alert-success').text("OK! Promoção Cadastrada com sucesso!");
+			
+			$("#alert")
+			.removeClass("alert alert-danger")
+			.addClass('alert alert-success')
+			.text("OK! Promoção Cadastrada com sucesso!");
+		},
+		statusCode: {
+			422: function(xhr){
+				console.log('status error: ', xhr.status);
+				var errors = $.parseJSON(xhr.responseText);
+				
+				$.each(errors, function(key, val){
+					$("#" + key).addClass("is-invalid");
+					$("#error-" + key)
+					.addClass("invalid-feedback")
+					.append("<span class='error-span'>" + val + "</span>");
+				});
+			}
 		},
 		error: function(xhr){
 			console.log('error: ', xhr.responseText);
@@ -45,6 +83,7 @@ $("#form-add-promo").submit(function(evt){
 	});
 	
 });
+
 
 //Função para capturar as meta tags do site
 $("#linkPromocao").on('change', function(){
