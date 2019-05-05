@@ -32,10 +32,11 @@ public class PromocaoController {
 	
 	@PostMapping("/save")
 	public ResponseEntity<Promocao> salvarPromocao(Promocao promocao){
-		
+		log.info("Salvando a promoção...");
 		log.info("Promoção:", promocao.toString());
 		promocao.setDtCadastro(LocalDateTime.now());
 		promocaoRepository.save(promocao);
+		log.info("Promoção salva.");
 		return ResponseEntity.ok().build();
 	}
 	
@@ -46,7 +47,6 @@ public class PromocaoController {
 	
 	@GetMapping("/add")
 	public String abrirCadastro() {
-		
 		return "promo-add";
 	}
 	

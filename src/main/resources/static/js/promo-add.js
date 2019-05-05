@@ -19,12 +19,28 @@ $("#form-add-promo").submit(function(evt){
 		method: "POST",
 		url: "/promocao/save",
 		data: promo,
+		beforeSend: function(){
+			$("#form-add-promo").hide();
+			$("#loader-form").addClass("loader").show();
+		},
 		success: function(){
+			$("#form-add-promo").each(function(){
+				this.reset();
+			});
+			$("#linkImagem").attr("src","/images/promo-dark.png");
+			$("#site").text("");
 			$("#alert").addClass('alert alert-success').text("OK! Promoção Cadastrada com sucesso!");
 		},
 		error: function(xhr){
 			console.log('error: ', xhr.responseText);
 			$("#alert").addClass('alert alert-danger').text("Não foi possível salvar esta promoção.");
+		},
+		complete : function(){
+			$("#loader-form").fadeOut(800, function(){
+				$("#form-add-promo").fadeIn(250);
+				$("#loader-form").removeClass("loader");
+			});
+			
 		}
 	});
 	
@@ -40,7 +56,7 @@ $("#linkPromocao").on('change', function(){
 			url: "/meta/info?url=" + url,
 			cache: false,
 			beforeSend: function() {
-				$("#alert").removeClass("alert alert-danger").text("");
+				$("#alert").removeClass("alert alert-danger alert-success").text("");
 				$("#titulo").val('');
 				$("#site").text('');
 				$("#linkImagem").attr("src", '');
