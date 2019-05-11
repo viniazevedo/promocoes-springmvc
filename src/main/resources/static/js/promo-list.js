@@ -60,3 +60,21 @@ function loadByScrollBar(pageNumber){
 		}
 	});
 }
+
+//Ação para dar like na promoção
+//Resolver o bug dos itens carregados depois da paginação(referenciar o elemento no DOM)
+$(document).on("click", "button[id*='likes-btn-']", function(){
+	var id = $(this).attr("id").split("-")[2];
+	console.log("id: ", id);
+	
+	$.ajax({
+		method: "POST",
+		url: "/promocao/like/" + id,
+		success: function(response){
+			$("#likes-count-" + id).text(response);
+		},
+		error: function(xhr){
+			alert("Ops... Ocorreu um erro: " + xhr.status + ", " + xhr.statusText);
+		}
+	});
+});
