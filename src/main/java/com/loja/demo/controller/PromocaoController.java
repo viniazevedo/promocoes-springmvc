@@ -59,6 +59,11 @@ public class PromocaoController {
 		return ResponseEntity.ok().build();
 	}
 	
+	@GetMapping("/site")
+	public ResponseEntity<?> autoCompleteByTermo(@RequestParam("termo") String termo){
+		List<String> sites = promocaoRepository.findSitesByTermo(termo);
+		return ResponseEntity.ok(sites);
+	}
 	
 	@GetMapping("/list")
 	public String listarOfertas(ModelMap model) {
@@ -68,12 +73,28 @@ public class PromocaoController {
 		return "promo-list";
 	}
 	
+	@GetMapping("/site/list")
+	public String listarPorSite(@RequestParam("site") String site, ModelMap model) {
+		Sort sort = new Sort(Sort.Direction.DESC, "dtCadastro");
+		PageRequest pageRequest = PageRequest.of(0, 8, sort);
+		model.addAttribute("promocoes", promocaoRepository.findBySite(site, pageRequest));
+		return "promo-card";
+	}
+	
 	
 	@GetMapping("/list/ajax")
-	public String listarCards(@RequestParam(name = "page", defaultValue = "1") int page, ModelMap model) {
+	public String listarCards(@RequestParam(name = "page", defaultValue = "1") int page, 
+							  @RequestParam(name = "site", defaultValue = "") String site, 	
+							  ModelMap model) {
+		
 		Sort sort = new Sort(Sort.Direction.DESC, "dtCadastro");
 		PageRequest pageRequest = PageRequest.of(page, 8, sort);
-		model.addAttribute("promocoes", promocaoRepository.findAll(pageRequest));
+		if(site.isEmpty()) {
+			model.addAttribute("promocoes", promocaoRepository.findAll(pageRequest));
+		}else {
+			model.addAttribute("promocoes", promocaoRepository.findBySite(site, pageRequest));
+		}
+			
 		return "promo-card";
 	}
 	

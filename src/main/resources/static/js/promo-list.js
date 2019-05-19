@@ -7,17 +7,12 @@ $(document).ready(function(){
 
 //Efeito infinite-scroll
 $(window).scroll(function(){
-	
 	var scrollTop = $(this).scrollTop();
-	
-	//Valor da altura referente ao conteúdo
+	 //Valor da altura referente ao conteúdo
 	var conteudo = $(document).height() - $(window).height();
-	
-	//console.log('scrollTop: ', scrollTop, '|', conteudo);
-	
+	 //console.log('scrollTop: ', scrollTop, '|', conteudo);
 	if(scrollTop >= conteudo){
-		//Fazer a Ajax Request.
-		//console.log("***")
+		//Fazer a Request Ajax .
 		pageNumber++;
 		setTimeout(function(){
 			loadByScrollBar(pageNumber);
@@ -27,11 +22,13 @@ $(window).scroll(function(){
 
 
 function loadByScrollBar(pageNumber){
+	var site = $("#autocomplete-input").val();
 	$.ajax({
 		method: "GET",
 		url: "/promocao/list/ajax",
 		data: {
-			page : pageNumber
+			page : pageNumber,
+			site: site
 		},
 		beforeSend: function(){
 			$('#loader-img').show();
@@ -78,3 +75,50 @@ $(document).on("click", "button[id*='likes-btn-']", function(){
 		}
 	});
 });
+
+//Autocomplete para funcionalidade Pesquisar.
+$("#autocomplete-input").autocomplete({
+	source: function(request, response){
+		$.ajax({
+			method: "GET",
+			url: "/promocao/site",
+			data: {
+				termo: request.term
+			},
+			success: function(result){
+				response(result);
+			}
+		});
+	}
+});
+
+
+//Botão submit do autocomplete para Pesquisar o site da Promoção
+$("#autocomplete-submit").on("click", function(){
+	var site = $("#autocomplete-input").val();
+	$.ajax({
+		method: "GET",
+		url: "/promocao/site/list",
+		data: {
+			site: site
+		},
+		beforeSend: function(){
+			pageNumber = 0;
+			$("#fim-btn").hide();
+			$(".row").fadeOut(400, function(){
+				$(this).empty();
+				
+			});
+		},
+		success: function(response){
+			$(".row").fadeIn(250, function(){
+				$(this).append(response);
+				
+			});
+		},
+		error: function(xhr){
+			alert("Ops..., Algo deu errado. " + xhr.status + ", " + xhr.statusText);
+		}
+	});
+});
+
