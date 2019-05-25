@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -28,6 +29,7 @@ import com.loja.demo.domain.Categoria;
 import com.loja.demo.domain.Promocao;
 import com.loja.demo.repository.CategoriaRepository;
 import com.loja.demo.repository.PromocaoRepository;
+import com.loja.demo.service.PromocaoDataTablesService;
 
 @Controller
 @RequestMapping("/promocao")
@@ -41,6 +43,20 @@ public class PromocaoController {
 	@Autowired
 	private PromocaoRepository promocaoRepository;
 	
+	//DataTables
+	@GetMapping("/tabela")
+	public String showTabela() {
+		return "promo-datatables";
+	}
+	
+	@GetMapping("/datatables/server")
+	public ResponseEntity<?> dataTables(HttpServletRequest request){
+		Map<String, Object> data = 
+				new PromocaoDataTablesService().execute(promocaoRepository, request);
+		return ResponseEntity.ok(data);
+	}
+	
+	//Salvar Promoção
 	@PostMapping("/save")
 	public ResponseEntity<?> salvarPromocao(@Valid Promocao promocao, BindingResult result){
 		if(result.hasErrors()) {
@@ -59,12 +75,14 @@ public class PromocaoController {
 		return ResponseEntity.ok().build();
 	}
 	
+	//AutoComplete
 	@GetMapping("/site")
 	public ResponseEntity<?> autoCompleteByTermo(@RequestParam("termo") String termo){
 		List<String> sites = promocaoRepository.findSitesByTermo(termo);
 		return ResponseEntity.ok(sites);
 	}
 	
+	//Listar Ofertas
 	@GetMapping("/list")
 	public String listarOfertas(ModelMap model) {
 		Sort sort = new Sort(Sort.Direction.DESC, "dtCadastro");
@@ -73,6 +91,8 @@ public class PromocaoController {
 		return "promo-list";
 	}
 	
+	
+	//Listar Ofertas da Busca por Site
 	@GetMapping("/site/list")
 	public String listarPorSite(@RequestParam("site") String site, ModelMap model) {
 		Sort sort = new Sort(Sort.Direction.DESC, "dtCadastro");
@@ -81,7 +101,7 @@ public class PromocaoController {
 		return "promo-card";
 	}
 	
-	
+	//Listar Cards
 	@GetMapping("/list/ajax")
 	public String listarCards(@RequestParam(name = "page", defaultValue = "1") int page, 
 							  @RequestParam(name = "site", defaultValue = "") String site, 	
@@ -109,6 +129,7 @@ public class PromocaoController {
 		return "promo-add";
 	}
 	
+	//Botão Curtir
 	@PostMapping("/like/{id}")
 	public ResponseEntity<?> adicionarLikes(@PathVariable("id") Long id){
 		promocaoRepository.updateSomarLikes(id);
