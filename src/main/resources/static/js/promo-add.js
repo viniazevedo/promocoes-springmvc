@@ -1,7 +1,7 @@
 
 
 //Submit do formulário de Cadastro para o Controller
-$("#form-add-promo").submit(function(evt){
+$("#form-add-promo").submit(function( evt ){
 	/**
 	 * bloquear o comportamento padrão 
 	 * do submit(Fazer requisição e refresh da tela)
@@ -48,6 +48,7 @@ $("#form-add-promo").submit(function(evt){
 			$("#form-add-promo").each(function(){
 				this.reset();
 			});
+			
 			$("#linkImagem").attr("src","/images/promo-dark.png");
 			$("#site").text("");
 			
@@ -55,28 +56,36 @@ $("#form-add-promo").submit(function(evt){
 			.removeClass("alert alert-danger")
 			.addClass('alert alert-success')
 			.text("OK! Promoção Cadastrada com sucesso!");
+		
 		},
 		statusCode: {
-			422: function(xhr){
+			422: function( xhr ){
+				
 				console.log('status error: ', xhr.status);
 				var errors = $.parseJSON(xhr.responseText);
 				
 				$.each(errors, function(key, val){
+				
 					$("#" + key).addClass("is-invalid");
 					$("#error-" + key)
 					.addClass("invalid-feedback")
 					.append("<span class='error-span'>" + val + "</span>");
+				
 				});
 			}
 		},
-		error: function(xhr){
+		error: function( xhr ){
+			
 			console.log('error: ', xhr.responseText);
 			$("#alert").addClass('alert alert-danger').text("Não foi possível salvar esta promoção.");
+		
 		},
 		complete : function(){
+			
 			$("#loader-form").fadeOut(800, function(){
-				$("#form-add-promo").fadeIn(250);
-				$("#loader-form").removeClass("loader");
+			$("#form-add-promo").fadeIn(250);
+			$("#loader-form").removeClass("loader");
+			
 			});
 			
 		}
@@ -85,7 +94,7 @@ $("#form-add-promo").submit(function(evt){
 });
 
 
-//Função para capturar as meta tags do site
+//Função para capturar as meta tags do site e retornar os dados da promoção
 $("#linkPromocao").on('change', function(){
 	var url = $(this).val();
 	

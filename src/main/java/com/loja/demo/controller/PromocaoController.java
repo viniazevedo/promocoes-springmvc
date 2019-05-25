@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.loja.demo.domain.Categoria;
 import com.loja.demo.domain.Promocao;
+import com.loja.demo.dto.PromocaoDTO;
 import com.loja.demo.repository.CategoriaRepository;
 import com.loja.demo.repository.PromocaoRepository;
 import com.loja.demo.service.PromocaoDataTablesService;
@@ -47,6 +48,41 @@ public class PromocaoController {
 	@GetMapping("/tabela")
 	public String showTabela() {
 		return "promo-datatables";
+	}
+	
+	//Pré-Editar Promoção da Tabela
+	@GetMapping("/edit/{id}")
+	public ResponseEntity<?> preEditarPromocao(@PathVariable("id") Long id) {
+		Promocao promocao = promocaoRepository.findById(id).get();
+		return ResponseEntity.ok(promocao);
+	}
+	
+	//Editar a Promoção
+	@PostMapping("/edit")
+	public ResponseEntity<?> editarPromocao(@Valid PromocaoDTO dto, BindingResult result){
+		
+		//Mapear se ocorreu algum erro
+		if (result.hasErrors()) {
+			Map<String, String> erros = new HashMap<>();
+
+			for (FieldError error : result.getFieldErrors()) {
+				erros.put(error.getField(), error.getDefaultMessage());
+			}
+			
+			return ResponseEntity.unprocessableEntity().body(erros);
+		}
+		
+		Promocao promo = promocaoRepository.findById(dto.getId()).get();
+		
+		promo.setCategoria(dto.getCategoria());
+		promo.setDescricao(dto.getDescricao());
+		promo.setLinkImagem(dto.getLinkImagem());
+		promo.setPreco(dto.getPreco());
+		promo.setTitulo(dto.getTitulo());
+		
+		promocaoRepository.save(promo);
+		
+		return ResponseEntity.ok().build();
 	}
 	
 	//Excluir Promoção da Tabela
