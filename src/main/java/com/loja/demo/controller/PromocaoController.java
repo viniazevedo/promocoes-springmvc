@@ -49,6 +49,7 @@ public class PromocaoController {
 		return "promo-datatables";
 	}
 	
+	//Carregar os dados para o Datatable
 	@GetMapping("/datatables/server")
 	public ResponseEntity<?> dataTables(HttpServletRequest request){
 		Map<String, Object> data = 
