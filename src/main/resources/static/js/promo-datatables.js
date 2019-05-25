@@ -1,5 +1,6 @@
  $( document ).ready(function() {
     console.log("Carregando a tabela...");
+    moment.locale('pt-br');
     $("#table-server").DataTable({
 		processing: true,
 		serverSide: true,
@@ -18,11 +19,57 @@
 				{data: 'linkImagem'},
 				{data: 'preco', render: $.fn.dataTable.render.number('.',',', 2,'R$')},
 				{data: 'likes'},
-				{data: 'dtCadastro'},
+				{data: 'dtCadastro', render: 
+					function(dtCadastro){
+					return moment( dtCadastro ).format('LLL');
+				}
+				},
 				{data: 'categoria.titulo'}
 				
+			],
+			dom: 'Bfrtip',
+			buttons: [
+				{
+					text: 'Editar',
+					attr: {
+						id: 'btn-editar',
+						type: 'button'
+					}
+				},
+				{
+					text: 'Excluir',
+					attr: {
+						id: 'btn-excluir',
+						type: 'button'
+					}
+				}
 			]
 		});
-});	
+
+    $("#table-server tbody").on("click", 'tr', function(){
+    	if($(this).hasClass('selected')){
+    		$(this).removeClass('selected');
+    		
+    	}else{
+    		$('tr.selected').removeClass('selected');
+    		$(this).addClass('selected');
+    		
+    	}
+    });
+    
+    
+    $("#btn-editar").on("click", function(){
+    	alert("Editar..");
+    });
+
+    
+    $("#btn-excluir").on("click", function(){
+    	alert("Excluir..");
+    });
+ 
+ });	
 	
+ 
+
+
  
