@@ -1,7 +1,9 @@
  $( document ).ready(function() {
-    console.log("Carregando a tabela...");
+    
+	console.log("Carregando a tabela...");
     moment.locale('pt-br');
-    $("#table-server").DataTable({
+    
+    var table = $("#table-server").DataTable({
 		processing: true,
 		serverSide: true,
 		responsive: true,
@@ -34,38 +36,86 @@
 					attr: {
 						id: 'btn-editar',
 						type: 'button'
-					}
+					},
+					enabled: false
 				},
 				{
 					text: 'Excluir',
 					attr: {
 						id: 'btn-excluir',
 						type: 'button'
-					}
+					},
+					enabled: false
 				}
 			]
 		});
 
+    //Marcar/Desmarcar botões ao clicar na ordenação
+    $("#table-server thead").on("click", 'tr', function(){
+    	table.buttons().disable();
+    });
+    
+    
+    //Marcar/Desmarcar linhas selecionadas
     $("#table-server tbody").on("click", 'tr', function(){
     	if($(this).hasClass('selected')){
     		$(this).removeClass('selected');
-    		
+    		table.buttons().disable();
     	}else{
     		$('tr.selected').removeClass('selected');
     		$(this).addClass('selected');
+    		table.buttons().enable();
+    	}
+    });
+    
+    //Ação botão editar
+    $("#btn-editar").on("click", function(){
+    	if( isSelectedRow() ){
+    		var id = getPromoId();
+    		console.log("@Editar... " + id);
+        	$("#modal-form").modal('show');
+    	}
+    });
+
+    //Ação Botão Excluir
+    $("#btn-excluir").on("click", function(){
+    	if( isSelectedRow() ){
+    		var id = getPromoId();
+    		console.log("@Excluir... " + id);
+    		$("#modal-delete").modal('show');
+    		
     		
     	}
     });
     
     
-    $("#btn-editar").on("click", function(){
-    	alert("Editar..");
+    //Botão confirmar exclusão
+    $("#btn-del-modal").on("click", function(){
+    	var id = getPromoId();
+    	$.ajax({
+    		method: "GET",
+    		url: "/promocao/delete/" + id,
+    		success: function(){
+    			$("#modal-delete").modal('hide');
+    			table.ajax.reload();
+    		},
+    		error: function(){
+    			alert('Ops... Ocorreu um erro, tente mais tarde.');
+    		}
+    	});
     });
-
     
-    $("#btn-excluir").on("click", function(){
-    	alert("Excluir..");
-    });
+    
+    function getPromoId(){
+    	return table.row(table.$('tr.selected')).data().id;
+    }
+    
+    function isSelectedRow(){
+    	var trow = table.row(table.$('tr.selected'));
+    	return trow.data() !== undefined;
+    }
+    
+     
  
  });	
 	

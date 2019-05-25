@@ -49,6 +49,13 @@ public class PromocaoController {
 		return "promo-datatables";
 	}
 	
+	//Excluir Promoção da Tabela
+	@GetMapping("/delete/{id}")
+	public ResponseEntity<?> excluirPromocao(@PathVariable("id") Long id){
+		promocaoRepository.deleteById(id);
+		return ResponseEntity.ok().build();
+	}
+	
 	//Carregar os dados para o Datatable
 	@GetMapping("/datatables/server")
 	public ResponseEntity<?> dataTables(HttpServletRequest request){
